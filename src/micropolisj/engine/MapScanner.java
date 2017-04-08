@@ -42,7 +42,7 @@ class MapScanner extends TileBehavior
 		STADIUM_FULL,
 		AIRPORT,
 		SEAPORT,
-		NEW_BUILDING; //Placeholder enum for new building. Change to building name if making a new building
+		SOLARHOUSE; //Placeholder enum for new building. Change to building name if making a new building
 	}
 
 	@Override
@@ -85,8 +85,9 @@ class MapScanner extends TileBehavior
 		case SEAPORT:
 			doSeaport();
 			return;
-		case NEW_BUILDING:
-			doNewBuilding(); //Call the NEW_BUILDING placeholder function
+		case SOLARHOUSE:
+			//doResidential();
+			doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
 			return;
 		default:
 			assert false;
@@ -115,6 +116,7 @@ class MapScanner extends TileBehavior
 		boolean newPower = (
 			tile == NUCLEAR ||
 			tile == POWERPLANT ||
+			tile == SOLARHOUSE || 
 			city.hasPower(xpos,ypos)
 			);
 
@@ -135,7 +137,7 @@ class MapScanner extends TileBehavior
 	/**
 	 * Place a 3x3 zone on to the map, centered on the current location.
 	 * Note: nothing is done if part of this zone is off the edge
-	 * of the map or is being flooded or radioactive.
+	 * of the map or is being flooded or radio-active.
 	 *
 	 * @param base The "zone" tile value for this zone.
 	 * @return true iff the zone was actually placed.
@@ -157,7 +159,7 @@ class MapScanner extends TileBehavior
 					return false;
 				}
 				if (isIndestructible2(city.getTile(x,y))) {
-					// radioactive, on fire, or flooded
+					// radio active, on fire, or flooded
 					return false;
 				}
 			}
@@ -210,13 +212,73 @@ class MapScanner extends TileBehavior
 	
 	//Placeholder for a new building
 	//Look to the other do<building name>() functions to guidance on what this function should do.
-	void doNewBuilding()
+	void doSolarhouse()
 	{
 		//Very basic building functionality. Checks for power and does "repair"
 		boolean powerOn = checkZonePower();
 		if ((city.cityTime % 8) == 0) {
-			repairZone(NEW_BUILDING, 3);
+			repairZone(SOLARHOUSE, 3);
 		}
+		// RESIDENTIAL
+		city.resZoneCount++;
+
+		int tpop; //population of this zone
+		if (tile == RESCLR)
+		{
+			tpop = city.doFreePop(xpos, ypos);
+		}
+		else
+		{
+			tpop = residentialZonePop(tile);
+		}
+
+		city.resPop += tpop;
+
+		int trafficGood;
+		if (tpop > PRNG.nextInt(36))
+		{
+			trafficGood = makeTraffic(ZoneType.RESIDENTIAL);
+		}
+		else
+		{
+			trafficGood = 1;
+		}
+
+		if (trafficGood == -1)
+		{
+			int value = getCRValue();
+			doResidentialOut(tpop, value);
+			return;
+		}
+
+		if (tile == RESCLR || PRNG.nextInt(8) == 0)
+		{
+			int locValve = evalResidential(trafficGood);
+			int zscore = city.resValve + locValve;
+
+			if (!powerOn)
+				zscore = -500;
+
+//			if (zscore > -350 && zscore - 26380 > (PRNG.nextInt(0x10000)-0x8000))
+//			{
+//				if (tpop == 0 && PRNG.nextInt(4) == 0)
+//				{
+//					makeHospital();
+//					return;
+//				}
+//
+//				int value = getCRValue();
+//				doResidentialIn(tpop, value);
+//				return;
+//			}
+//
+//			if (zscore < 350 && zscore + 26380 < (PRNG.nextInt(0x10000)-0x8000))
+//			{
+//				int value = getCRValue();
+//				doResidentialOut(tpop, value);
+//			}
+		}
+		
 	}
 
 	void doFireStation()
@@ -420,7 +482,7 @@ class MapScanner extends TileBehavior
 						continue;
 
 					if (!isIndestructible(thCh))
-					{  //not rubble, radiactive, on fire or flooded
+					{  //not rubble, radioactive, on fire or flooded
 
 						city.setTile(xx,yy,(char) zoneBase);
 					}
