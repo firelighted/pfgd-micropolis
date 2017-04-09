@@ -86,8 +86,8 @@ class MapScanner extends TileBehavior
 			doSeaport();
 			return;
 		case SOLARHOUSE:
-			doResidential();
-			//doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
+			//doResidential();
+			doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
 			return;
 		default:
 			assert false;
@@ -259,24 +259,18 @@ class MapScanner extends TileBehavior
 			if (!powerOn)
 				zscore = -500;
 
-//			if (zscore > -350 && zscore - 26380 > (PRNG.nextInt(0x10000)-0x8000))
-//			{
-//				if (tpop == 0 && PRNG.nextInt(4) == 0)
-//				{
-//					makeHospital();
-//					return;
-//				}
-//
-//				int value = getCRValue();
-//				doResidentialIn(tpop, value);
-//				return;
-//			}
-//
-//			if (zscore < 350 && zscore + 26380 < (PRNG.nextInt(0x10000)-0x8000))
-//			{
-//				int value = getCRValue();
-//				doResidentialOut(tpop, value);
-//			}
+			if (zscore > -350 && zscore - 26380 > (PRNG.nextInt(0x10000)-0x8000))
+			{
+				int value = getCRValue();
+				doResidentialIn(tpop, value);
+				return;
+			}
+
+			if (zscore < 350 && zscore + 26380 < (PRNG.nextInt(0x10000)-0x8000))
+			{
+				int value = getCRValue();
+				doResidentialOut(tpop, value);
+			}
 		}
 		
 	}
@@ -797,7 +791,24 @@ class MapScanner extends TileBehavior
 			}
 			return;
 		}
+		else if (tile == SOLARHOUSE)
+		{
+			if (pop < 8)
+			{
+//				buildHouse(value);
+				adjustROG(1);
+				return;
+			}
 
+			if (city.getPopulationDensity(xpos, ypos) > 64)
+			{
+//				residentialPlop(0, value);
+				adjustROG(8);
+				return;
+			}
+			return;
+		}
+		
 		if (pop < 40)
 		{
 			residentialPlop(pop / 8 - 1, value);
