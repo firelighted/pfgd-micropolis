@@ -86,8 +86,8 @@ class MapScanner extends TileBehavior
 			doSeaport();
 			return;
 		case SOLARHOUSE:
-			//doResidential();
-			doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
+			doResidential();
+			//doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
 			return;
 		default:
 			assert false;
