@@ -54,6 +54,9 @@ class BuildingTool extends ToolStroke
 			
 		case SOLARHOUSE: // NEW_BUILDING
 			return applyZone(eff, SOLARHOUSE); //If the tile we're applying is the NEW_BUILDING, use applyZone to place a NEW_BUILDING tile
+		
+		case ROLLER: // NEW_BUILDING
+			return applyZone(eff, ROLLER); //If the tile we're applying is the NEW_BUILDING, use applyZone to place a NEW_BUILDING tile
 
 		default:
 			// not expected

@@ -86,6 +86,8 @@ public class Micropolis
 	public int [][] fireRate;       //firestations reach- used for overlay graphs
 	int [][] policeMap;      //police stations- cleared and rebuilt each sim cycle
 	public int [][] policeMapEffect;//police stations reach- used for overlay graphs
+	int [][] happinessMap;   // happiness- cleared and rebuilt each sim cycle
+	public int [][] happinessMapEffect;// happiness reach- used for overlay graphs
 
 	/** For each 8x8 section of city, this is an integer between 0 and 64,
 	 * with higher numbers being closer to the center of the city. */
@@ -120,6 +122,7 @@ public class Micropolis
 	int churchCount;
 	int policeCount;
 	int fireStationCount;
+	int rollerCount;
 	int stadiumCount;
 	int coalCount;
 	int nuclearCount;
@@ -244,6 +247,8 @@ public class Micropolis
 		fireStMap = new int[smY][smX];
 		policeMap = new int[smY][smX];
 		policeMapEffect = new int[smY][smX];
+		happinessMap = new int[smY][smX];
+		happinessMapEffect = new int[smY][smX];
 		fireRate = new int[smY][smX];
 		comRate = new int[smY][smX];
 
@@ -533,6 +538,7 @@ public class Micropolis
 		churchCount = 0;
 		policeCount = 0;
 		fireStationCount = 0;
+		rollerCount = 0;
 		stadiumCount = 0;
 		coalCount = 0;
 		nuclearCount = 0;
@@ -544,6 +550,7 @@ public class Micropolis
 			for (int x = 0; x < fireStMap[y].length; x++) {
 				fireStMap[y][x] = 0;
 				policeMap[y][x] = 0;
+				happinessMap[y][x] = 0;
 			}
 		}
 	}
@@ -648,6 +655,7 @@ public class Micropolis
 
 		case 15:
 			fireAnalysis();
+			happinessAnalysis();
 			doDisasters();
 			break;
 
@@ -941,7 +949,7 @@ public class Micropolis
 	}
 
 	void fireAnalysis()
-	{
+	{ // spread out and blur fire effect
 		fireStMap = smoothFirePoliceMap(fireStMap);
 		fireStMap = smoothFirePoliceMap(fireStMap);
 		fireStMap = smoothFirePoliceMap(fireStMap);
@@ -952,6 +960,20 @@ public class Micropolis
 		}
 
 		fireMapOverlayDataChanged(MapState.FIRE_OVERLAY);
+	}
+	
+	void happinessAnalysis()
+	{ // spread out and blur fire effect
+		happinessMap = smoothFirePoliceMap(happinessMap);
+		happinessMap = smoothFirePoliceMap(happinessMap);
+		happinessMap = smoothFirePoliceMap(happinessMap);
+		for (int sy = 0; sy < happinessMap.length; sy++) {
+			for (int sx = 0; sx < happinessMap[sy].length; sx++) {
+				happinessMapEffect[sy][sx] = happinessMap[sy][sx];
+			}
+		}
+
+		fireMapOverlayDataChanged(MapState.HAPPINESS_OVERLAY); // link to interface
 	}
 
 	private boolean testForCond(CityLocation loc, int dir)
@@ -1464,6 +1486,7 @@ public class Micropolis
 		bb.put("SOLARHOUSE", new MapScanner(this, MapScanner.B.SOLARHOUSE));
 		bb.put("FIRESTATION", new MapScanner(this, MapScanner.B.FIRESTATION));
 		bb.put("POLICESTATION", new MapScanner(this, MapScanner.B.POLICESTATION));
+		bb.put("ROLLER", new MapScanner(this, MapScanner.B.ROLLER));
 		bb.put("STADIUM_EMPTY", new MapScanner(this, MapScanner.B.STADIUM_EMPTY));
 		bb.put("STADIUM_FULL", new MapScanner(this, MapScanner.B.STADIUM_FULL));
 		bb.put("AIRPORT", new MapScanner(this, MapScanner.B.AIRPORT));
@@ -2585,6 +2608,10 @@ public class Micropolis
 				sendMessage(MicropolisMessage.HIGH_POLLUTION);
 			}
 			break;
+		case 37:
+			if (totalPop > 60 && rollerCount == 0) {
+				sendMessage(MicropolisMessage.NEED_ROLLERRINK);
+			}
 		case 42:
 			if (crimeAverage > 100) {
 				sendMessage(MicropolisMessage.HIGH_CRIME);
@@ -2625,6 +2652,8 @@ public class Micropolis
 				sendMessage(MicropolisMessage.HIGH_TRAFFIC);
 			}
 			break;
+
+			
 		default:
 			//nothing
 		}

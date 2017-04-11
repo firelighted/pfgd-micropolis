@@ -30,6 +30,7 @@ public enum MicropolisTool
 	NUCLEAR(4, 5000),
 	AIRPORT(6, 10000),
 	SOLARHOUSE(3, 100), //Placeholder for a new tool. 
+	ROLLER(3, 100),
 	QUERY(1, 0);
 
 	int size;
@@ -70,6 +71,7 @@ public enum MicropolisTool
 		case NUCLEAR:
 		case AIRPORT:
 		case SOLARHOUSE:
+		case ROLLER:
 			return new BuildingTool(engine, this, xpos, ypos);
 
 		default:

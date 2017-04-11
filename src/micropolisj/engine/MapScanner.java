@@ -42,7 +42,8 @@ class MapScanner extends TileBehavior
 		STADIUM_FULL,
 		AIRPORT,
 		SEAPORT,
-		SOLARHOUSE; //Placeholder enum for new building. Change to building name if making a new building
+		SOLARHOUSE,
+		ROLLER; //Placeholder enum for new building. Change to building name if making a new building
 	}
 
 	@Override
@@ -88,6 +89,9 @@ class MapScanner extends TileBehavior
 		case SOLARHOUSE:
 			//doResidential();
 			doSolarhouse(); //Call the NEW_BUILDING placeholder function doSolarhouse
+			return;
+		case ROLLER:
+			doRollerRink(); //Call the NEW_BUILDING placeholder function doSolarhouse
 			return;
 		default:
 			assert false;
@@ -210,6 +214,31 @@ class MapScanner extends TileBehavior
 		city.powerPlants.add(new CityLocation(xpos, ypos));
 	}
 	
+	void doRollerRink()
+	{
+		city.rollerCount++;
+		boolean powerOn = checkZonePower();
+		if ((city.cityTime % 8) == 0) {
+			repairZone(ROLLER, 3);
+		}
+
+		int z;
+		if (powerOn) {
+			z = city.policeEffect;
+		} else {
+			z = city.policeEffect / 2;
+		}
+
+		traffic.mapX = xpos;
+		traffic.mapY = ypos;
+		if (!traffic.findPerimeterRoad()) {
+			z /= 2;
+		}
+
+		city.happinessMap[ypos/8][xpos/8] += z;
+		
+	}
+	
 	//Placeholder for a new building
 	//Look to the other do<building name>() functions to guidance on what this function should do.
 	void doSolarhouse()
@@ -223,7 +252,7 @@ class MapScanner extends TileBehavior
 		city.resZoneCount++;
 
 		int tpop; //population of this zone
-		if (tile == RESCLR)
+		if (tile == SOLARHOUSE) // RESCLR
 		{
 			tpop = city.doFreePop(xpos, ypos);
 		}
@@ -251,7 +280,7 @@ class MapScanner extends TileBehavior
 			return;
 		}
 
-		if (tile == RESCLR || PRNG.nextInt(8) == 0)
+		if (tile == SOLARHOUSE || PRNG.nextInt(8) == 0) //RESCLR
 		{
 			int locValve = evalResidential(trafficGood);
 			int zscore = city.resValve + locValve;

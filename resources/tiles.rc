@@ -1009,7 +1009,7 @@
 957   misc_animation@0,2080
 958   misc_animation@0,2096
 959   misc_animation@0,2112
-# BEGIN NEW BUILDING #
+# BEGIN SOLAR HOUSE #
 960   solarhouse@0,0            (conducts)
 961   solarhouse@16,0           (conducts)
 962   solarhouse@32,0           (conducts)
@@ -1019,3 +1019,13 @@
 966   solarhouse@0,32           (conducts)
 967   solarhouse@16,32          (conducts)
 968   solarhouse@32,32          (conducts)
+# BEGIN ROLLER RINK #
+969   roller@0,0            (conducts)
+970   roller@16,0           (conducts)
+971   roller@32,0           (conducts)
+972   roller@0,16           (conducts)
+973   roller@16,16    (zone)(conducts)(building=3x3)(behavior=ROLLER)(description=#30)
+974   roller@32,16          (conducts)
+975   roller@0,32           (conducts)
+976   roller@16,32          (conducts)
+977   roller@32,32          (conducts)

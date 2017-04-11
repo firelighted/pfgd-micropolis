@@ -203,6 +203,17 @@ public class OverlayMapView extends JComponent
 			}
 		}
 	}
+	
+	private void drawHappinessRadius(Graphics gr)
+	{
+		int [][] A = engine.happinessMapEffect;
+
+		for (int y = 0; y < A.length; y++) {
+			for (int x = 0; x < A[y].length; x++) {
+				maybeDrawRect(gr, getCI(A[y][x]),x*24,y*24,24,24);
+			}
+		}
+	}
 
 	private void drawPoliceRadius(Graphics gr)
 	{
@@ -382,6 +393,8 @@ public class OverlayMapView extends JComponent
 			drawPoliceRadius(gr); break;
 		case FIRE_OVERLAY:
 			drawFireRadius(gr); break;
+		case HAPPINESS_OVERLAY:
+			drawHappinessRadius(gr); break;
 		case CRIME_OVERLAY:
 			drawCrimeMap(gr); break;
 		case POLLUTE_OVERLAY:
